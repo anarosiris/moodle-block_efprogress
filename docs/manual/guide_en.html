@@ -1,0 +1,346 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>
+  @font-face { font-family:'Poppins'; src:url('fonts/Poppins-Regular.ttf'); font-weight:400; }
+  @font-face { font-family:'Poppins'; src:url('fonts/Poppins-Medium.ttf'); font-weight:500; }
+  @font-face { font-family:'Poppins'; src:url('fonts/Poppins-SemiBold.ttf'); font-weight:600; }
+  @font-face { font-family:'Poppins'; src:url('fonts/Poppins-Bold.ttf'); font-weight:700; }
+  @font-face { font-family:'Lato'; src:url('fonts/Lato-Regular.ttf'); font-weight:400; }
+  @font-face { font-family:'Lato'; src:url('fonts/Lato-Bold.ttf'); font-weight:700; }
+
+  :root{
+    --teal:#009b9b; --teal-d:#00787a; --teal-l:#e6f5f5; --teal-l2:#d2ecec;
+    --orange:#F39200; --orange-l:#fff3e0; --orange-d:#c9760a;
+    --ink:#2d3a3a; --muted:#6c7a7a; --line:#dfeaea;
+  }
+  @page{
+    size:A4; margin:18mm 16mm 16mm 16mm;
+    @bottom-center{ content:"eLearning Fácil  ·  elearningfacil.com"; font-family:'Lato'; font-size:8pt; color:#9fb0b0; }
+    @bottom-right{ content:counter(page); font-family:'Poppins'; font-weight:600; font-size:9pt; color:var(--teal); }
+  }
+  @page cover{ margin:0; @bottom-center{content:""} @bottom-right{content:""} }
+  @page :first{ margin:0; }
+  a{ color:var(--teal-d); text-decoration:none; }
+
+  *{box-sizing:border-box;}
+  body{ font-family:'Lato'; color:var(--ink); font-size:10.5pt; line-height:1.5; margin:0; }
+  h1,h2,h3,h4{ font-family:'Poppins'; color:var(--teal-d); margin:0 0 .3em; line-height:1.2; }
+  p{ margin:0 0 .6em; }
+  b,strong{ font-weight:700; }
+  code{ font-family:'Lato'; background:var(--teal-l); color:var(--teal-d); padding:1px 5px; border-radius:4px; font-size:9.5pt; font-weight:700; }
+
+  /* Portada clara (sistema de marca): fondo blanco, círculo crema, logo sin caja y enlazado */
+  .cover{ page:cover; height:297mm; background:#fff; color:var(--ink); position:relative; overflow:hidden; }
+  .cover .blob{ position:absolute; border-radius:50%; }
+  .cover .b1{ width:170mm; height:170mm; right:-60mm; top:-70mm; background:#fff3d2; }
+  .cover .b2{ width:110mm; height:110mm; left:-45mm; bottom:-40mm; background:var(--teal-l); }
+  .cover-inner{ position:absolute; inset:0; padding:22mm 22mm 20mm; display:flex; flex-direction:column; }
+  .cover .logo{ width:72mm; display:block; }
+  .cover .eyebrow{ margin-top:46mm; font-family:'Poppins'; font-weight:700; font-size:10pt; letter-spacing:2.5px; color:#a85400; text-transform:uppercase; }
+  .cover h1{ color:#1a1a1a; font-size:40pt; font-weight:700; margin:3mm 0 0; line-height:1.05; }
+  .cover .sub{ font-family:'Poppins'; font-weight:600; font-size:15pt; color:#1a1a1a; margin-top:5mm; }
+  .cover .sub u{ text-decoration:none; background:#fec93f; padding:0 2mm; border-radius:4px; }
+  .cover .tag{ display:inline-block; background:var(--orange); color:#1a1a1a; font-family:'Poppins'; font-weight:700;
+    font-size:10pt; padding:4px 14px; border-radius:30px; margin-top:8mm; align-self:flex-start; }
+  .cover .ver{ margin-top:4mm; font-family:'Poppins'; font-weight:500; font-size:10pt; color:var(--muted); }
+  .by{ margin-top:auto; background:#fff3d2; border-radius:14px; padding:7mm 8mm; display:flex; gap:7mm; align-items:center; }
+  .by img{ width:22mm; height:22mm; border-radius:6mm; }
+  .by .k{ font-family:'Poppins'; font-weight:700; font-size:9pt; letter-spacing:1.5px; color:#a85400; text-transform:uppercase; }
+  .by p{ margin:1mm 0 0; font-size:10.5pt; }
+  .by a{ font-family:'Poppins'; font-weight:700; color:var(--teal-d); }
+  /* índice: cada fila es un enlace y el número de página sale solo */
+  .toc a.row{ color:inherit; }
+  .toc a.row::after{ content:target-counter(attr(href url), page); margin-left:auto; font-family:'Poppins'; font-weight:600; color:var(--teal); }
+  /* promo final */
+  .promo{ display:flex; flex-wrap:wrap; gap:5mm; margin-top:4mm; }
+  .promo a{ width:calc(50% - 2.5mm); display:flex; gap:4mm; align-items:flex-start; background:#f6fbfb; border:1px solid var(--line); border-radius:10px; padding:4.5mm; color:var(--ink); break-inside:avoid; }
+  .promo img{ width:16mm; height:16mm; flex:none; }
+  .promo b{ display:block; font-family:'Poppins'; color:var(--teal-d); font-size:11pt; margin-bottom:1mm; }
+  .promo span{ font-size:9.5pt; line-height:1.4; }
+  .cta{ margin-top:7mm; background:#fff3d2; border-radius:12px; padding:6mm 7mm; text-align:center; }
+  .cta a{ display:inline-block; margin-top:3mm; background:var(--orange); color:#1a1a1a; font-family:'Poppins'; font-weight:700; border-radius:30px; padding:3mm 8mm; }
+  .part{ page-break-before:always; }
+  .partbar{ background:linear-gradient(90deg,var(--teal),var(--teal-d)); color:#fff; border-radius:12px;
+    padding:7mm 9mm; margin-bottom:7mm; }
+  .partbar .k{ font-family:'Poppins'; font-weight:600; font-size:10pt; letter-spacing:2px; color:#bff0f0; text-transform:uppercase; }
+  .partbar h1{ color:#fff; font-size:23pt; margin:2mm 0 0; }
+  .partbar p{ margin:2mm 0 0; color:#d6f5f5; font-size:10.5pt; }
+
+  h2{ font-size:15.5pt; margin-top:8mm; padding-bottom:2mm; border-bottom:2px solid var(--teal-l2); }
+  .num{ display:inline-block; min-width:8mm; height:8mm; line-height:8mm; text-align:center; background:var(--orange);
+    color:#fff; border-radius:50%; font-family:'Poppins'; font-weight:700; font-size:11pt; margin-right:3mm; }
+  h3{ font-size:12.5pt; color:var(--teal); margin-top:5mm; }
+
+  .box{ border-radius:10px; padding:5mm 6mm; margin:4mm 0; break-inside:avoid; font-size:10pt; }
+  .box .h{ font-family:'Poppins'; font-weight:600; font-size:9.5pt; letter-spacing:.5px; text-transform:uppercase; margin-bottom:1.5mm; }
+  .tip{ background:var(--orange-l); border-left:5px solid var(--orange); }
+  .tip .h{ color:var(--orange-d); }
+  .ok{ background:var(--teal-l); border-left:5px solid var(--teal); }
+  .ok .h{ color:var(--teal-d); }
+
+  ol.steps{ counter-reset:s; list-style:none; padding:0; margin:3mm 0; }
+  ol.steps>li{ position:relative; padding:0 0 4mm 12mm; break-inside:avoid; }
+  ol.steps>li:before{ counter-increment:s; content:counter(s); position:absolute; left:0; top:-1mm;
+    width:8mm; height:8mm; line-height:8mm; text-align:center; background:var(--teal); color:#fff;
+    border-radius:50%; font-family:'Poppins'; font-weight:700; font-size:10pt; }
+
+  ul.tick{ list-style:none; padding-left:0; margin:2mm 0; }
+  ul.tick li{ padding-left:7mm; position:relative; margin-bottom:2mm; }
+  ul.tick li:before{ content:""; position:absolute; left:0; top:2mm; width:3.2mm; height:3.2mm; background:var(--orange); border-radius:50%; }
+
+  table{ width:100%; border-collapse:collapse; margin:3mm 0; font-size:9.5pt; break-inside:avoid; }
+  th{ background:var(--teal); color:#fff; font-family:'Poppins'; font-weight:600; text-align:left; padding:3mm 3mm; }
+  td{ border-bottom:1px solid var(--line); padding:2.6mm 3mm; vertical-align:top; }
+  tr:nth-child(even) td{ background:#f6fbfb; }
+
+  .toc{ margin-top:4mm; }
+  .toc .row{ display:flex; align-items:baseline; border-bottom:1px dotted var(--line); padding:2.4mm 0; }
+  .toc .row .tt{ font-family:'Poppins'; font-weight:500; color:var(--ink); }
+  .toc .row .pg{ margin-left:auto; font-family:'Poppins'; font-weight:600; color:var(--teal); }
+  .toc .grp{ font-family:'Poppins'; font-weight:700; color:var(--orange-d); margin:6mm 0 1mm; font-size:11pt; letter-spacing:.5px; }
+
+  .lead{ font-size:11.5pt; color:var(--muted); }
+  .grid2{ display:flex; gap:6mm; }
+  .grid2>div{ flex:1; }
+  .card{ background:#f6fbfb; border:1px solid var(--line); border-radius:10px; padding:5mm; break-inside:avoid; }
+  .card h4{ font-size:11pt; color:var(--teal); margin-bottom:2mm; }
+  hr.s{ border:none; border-top:1px solid var(--line); margin:6mm 0; }
+  .small{ font-size:9pt; color:var(--muted); }
+  .shot{ display:block; width:100%; max-width:150mm; border:1px solid var(--line); border-radius:8px;
+    box-shadow:0 4px 14px rgba(0,0,0,.08); margin:4mm auto; break-inside:avoid; }
+  .shot.movil{ max-width:52mm; }
+  .shotcap{ text-align:center; font-size:8.5pt; color:var(--muted); margin:-2mm 0 4mm; }
+</style>
+</head>
+<body>
+
+<!-- COVER -->
+<section class="cover">
+  <div class="blob b1"></div>
+  <div class="blob b2"></div>
+  <div class="cover-inner">
+    <a href="https://elearningfacil.com"><img class="logo" src="logo_horizontal.png" alt="eLearning Fácil"></a>
+    <div class="eyebrow">Free block for Moodle™</div>
+    <h1>My progress</h1>
+    <div class="sub">Every student knows <u>how much is left.</u></div>
+    <div class="tag">Plugin guide · block_efprogress</div>
+    <div class="ver">Version 0.5.2 · Works with Moodle™ 5.1, 5.2 and 5.3</div>
+    <div class="by">
+      <img src="my-progress_512.png" alt="">
+      <div><div class="k">Developed and maintained by eLearning Fácil</div>
+        <p>An independent company that builds plugins for Moodle™ to save time for training providers and
+        companies: time tracking, reports, certificates and student management.</p>
+        <p><a href="https://elearningfacil.com">elearningfacil.com</a> · info@elearningfacil.com</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTENTS -->
+<section class="part">
+  <div class="partbar"><div class="k">Contents</div><h1>Table of contents</h1></div>
+  <div class="toc">
+    <div class="grp">Guide</div>
+    <a class="row" href="#s1"><span class="tt">1. What it is and what it is for</span></a>
+    <a class="row" href="#s2"><span class="tt">2. Installation</span></a>
+    <a class="row" href="#s3"><span class="tt">3. What the student sees</span></a>
+    <a class="row" href="#s4"><span class="tt">4. Block settings</span></a>
+    <a class="row" href="#s5"><span class="tt">5. Vertical or horizontal layout</span></a>
+    <a class="row" href="#s6"><span class="tt">6. Site settings</span></a>
+    <a class="row" href="#s7"><span class="tt">7. The “My time” section</span></a>
+    <div class="grp">Reference</div>
+    <a class="row" href="#s8"><span class="tt">8. Accessibility and mobile</span></a>
+    <a class="row" href="#s9"><span class="tt">9. Who sees it, permissions and privacy</span></a>
+    <a class="row" href="#s10"><span class="tt">10. Frequently asked questions</span></a>
+    <a class="row" href="#s11"><span class="tt">More plugins by eLearning Fácil</span></a>
+  </div>
+</section>
+
+<!-- 1-2 -->
+<section class="part">
+  <div class="partbar"><div class="k">Guide</div><h1>The student’s block</h1>
+    <p>Their progress in the course at a glance: what is done, where they are and what is left.</p></div>
+
+  <h2 id="s1"><span class="num">1</span>What it is and what it is for</h2>
+  <p class="lead"><b>My progress</b> is a course block that shows <b>each student their own progress</b>: a ring with
+  the percentage of activities completed and one mark per activity, so they know what they have done, where they are
+  and how much is left.</p>
+  <ul class="tick">
+    <li><b>Progress ring</b> with the percentage and “N of M” activities.</li>
+    <li><b>One mark per activity</b>: ✓ done · ● you are here · ○ pending. Every mark links to its activity.</li>
+    <li><b>Encouragement messages</b> from 60% and at 100%, with texts you can change.</li>
+    <li><b>A live list</b>: activities added or removed during the course appear and disappear on their own.</li>
+    <li>It uses <b>Moodle’s official activity completion</b>, whatever the method (view, grade…): the block only
+      reflects it and changes nothing.</li>
+    <li>Lightweight and built <b>mobile-first</b>. It stores no personal data.</li>
+  </ul>
+
+  <h2 id="s2"><span class="num">2</span>Installation</h2>
+  <ol class="steps">
+    <li><b>Back up your site before installing</b>: database, moodledata folder and code. It is good practice with
+      any plugin.</li>
+    <li><b>Site administration → Plugins → Install plugins</b>: upload the ZIP and confirm.</li>
+    <li>In the course, turn <b>Edit mode</b> on, open the block drawer and choose <b>Add a block → My progress</b>.</li>
+    <li>Check with a student account that the block appears with their activities.</li>
+  </ol>
+  <div class="box tip"><div class="h">First things first: activity completion</div>
+    The block counts the activities that have <b>completion enabled</b>. If none has it, students see nothing; teachers
+    then see a hint in the block explaining why.</div>
+  <p>Requirements: Moodle™ 5.1, 5.2 or 5.3 · PHP 8.2 or later · MySQL/MariaDB or PostgreSQL.</p>
+</section>
+
+<!-- 3 -->
+<section class="part">
+  <h2 id="s3"><span class="num">3</span>What the student sees</h2>
+  <img class="shot" style="max-width:88mm" src="en_01_block.png" alt="Course page with the My progress block on the right">
+  <div class="shotcap">The block on the course page, usually in the side drawer, next to the course content.</div>
+  <div class="grid2">
+    <div><img class="shot" style="max-width:44mm" src="en_02_block_closeup.png" alt="Block at 62% with a mark for each activity">
+      <div class="shotcap">5 of 8 done: the ring, the encouragement from 60% and the marks.</div></div>
+    <div><img class="shot" style="max-width:44mm" src="en_04_encouragement.png" alt="Block at 100% with the Activities completed message">
+      <div class="shotcap">At 100%: “Activities completed!”.</div></div>
+  </div>
+  <table>
+    <tr><th>Mark</th><th>What it means</th></tr>
+    <tr><td><b>✓ done</b></td><td>Activity completed. If it was completed with a failing grade, the mark is amber and says so.</td></tr>
+    <tr><td><b>● you are here</b></td><td>The first pending activity the student can open: where to carry on.</td></tr>
+    <tr><td><b>○ pending</b></td><td>Activity not completed yet.</td></tr>
+    <tr><td><b>padlock: locked</b></td><td>A restricted activity (by date, by completing another one first…) that the course page shows greyed out. No link; hovering over it, or tapping it on a phone, shows the reason.</td></tr>
+  </table>
+  <ul class="tick">
+    <li><b>Locked activities count towards the total</b> from day one, so “N of M” doesn’t jump as they unlock.</li>
+    <li><b>Hidden</b> activities, activities restricted to <b>another group</b> and restrictions set to hide entirely
+      <b>never appear</b> and don’t count.</li>
+    <li>The 100% message never says “course completed”: course completion may depend on criteria the block doesn’t see.</li>
+  </ul>
+</section>
+
+<!-- 4 -->
+<section class="part">
+  <h2 id="s4"><span class="num">4</span>Block settings</h2>
+  <p>With edit mode on: block menu → <b>Configure My progress block</b>. Each course has its own.</p>
+  <img class="shot" style="max-width:130mm" src="en_05_settings.png" alt="My progress block settings form">
+  <table>
+    <tr><th>Setting</th><th>Default</th><th>What it does</th></tr>
+    <tr><td><b>Block title</b></td><td>My progress</td><td>Change it if you want another name.</td></tr>
+    <tr><td><b>Layout</b></td><td>Automatic</td><td>Automatic, vertical or horizontal (section 5).</td></tr>
+    <tr><td><b>Show the “My progress” (activities) section</b></td><td>Yes</td><td>The ring and the marks. Below it, the form tells you how many course activities have completion.</td></tr>
+    <tr><td><b>Show restricted activities as locked steps</b></td><td>Yes</td><td>The padlocks from section 3. Untick it to show only accessible activities.</td></tr>
+    <tr><td><b>Show encouragement messages</b></td><td>Yes</td><td>The 60% and 100% messages.</td></tr>
+    <tr><td><b>Message from 60% / at 100%</b></td><td>Empty</td><td>Texts for this course only. Left empty, the site texts are used.</td></tr>
+    <tr><td><b>Show the “My time” section</b> and <b>Source of the expected course duration</b></td><td>Yes · course field</td><td>Only work with eLearning Fácil’s reporting plugin (section 7).</td></tr>
+  </table>
+</section>
+
+<!-- 5-6 -->
+<section class="part">
+  <h2 id="s5"><span class="num">5</span>Vertical or horizontal layout</h2>
+  <p>Under <b>Layout</b> you choose how the block is arranged:</p>
+  <ul class="tick">
+    <li><b>Automatic</b> (recommended): the block looks at its real width; in a side column it is vertical and in a
+      wide area it switches to horizontal. It works with any modern theme.</li>
+    <li><b>Vertical</b>: for the side column.</li>
+    <li><b>Horizontal</b>: the ring and counters in a row and the marks across the full width, for a wide area such as
+      above the course content.</li>
+  </ul>
+  <img class="shot" src="en_03_horizontal.png" alt="My progress block in horizontal layout">
+  <div class="shotcap">The block in horizontal layout, in a wide area.</div>
+
+  <h2 id="s6"><span class="num">6</span>Site settings</h2>
+  <p>In <b>Site administration → Plugins → Blocks → My progress</b>:</p>
+  <table>
+    <tr><th>Setting</th><th>What it does</th></tr>
+    <tr><td><b>Default message from 60%</b></td><td>Out of the box, “Keep going, you are almost there!”. Each course can change it.</td></tr>
+    <tr><td><b>Default message at 100%</b></td><td>Out of the box, “Activities completed!” with a party icon. Each course can change it.</td></tr>
+    <tr><td><b>Course custom field with the expected duration</b></td><td>Short name of the course field holding the expected hours (accepts “30”, “30 h”, “7.5”, “90 min” or hh:mm). Only the “My time” section uses it.</td></tr>
+  </table>
+</section>
+
+<!-- 7-8 -->
+<section class="part">
+  <h2 id="s7"><span class="num">7</span>The “My time” section</h2>
+  <p>The block can also show a <b>My time</b> section: the time spent and, with an expected course duration, a second
+  ring with the percentage and the time left.</p>
+  <div class="box tip"><div class="h">Only with eLearning Fácil’s reporting plugin</div>
+    This section appears <b>only if the site has eLearning Fácil’s reporting plugin installed</b>
+    (<code>local_efreport</code>, a paid plugin that is part of the complete suite) and the course measures time with
+    it. Without it, the section stays hidden even when ticked, and everything else works the same. In the block
+    settings, a note tells you whether the course measures time.</div>
+  <ul class="tick">
+    <li>With that plugin installed, the activities ring also uses <b>the same figures as its report</b>: the block and
+      the report cannot disagree.</li>
+    <li>The expected duration comes from the course field (section 6), is set manually in the block, or is left out to
+      show the total time only.</li>
+    <li>Figures are rounded down: 29 h 59 min is not 100% of 30 h.</li>
+  </ul>
+
+  <h2 id="s8"><span class="num">8</span>Accessibility and mobile</h2>
+  <div class="grid2">
+    <div><img class="shot movil" src="en_06_mobile.png" alt="My progress block on a phone">
+      <div class="shotcap">On a phone, inside the block drawer.</div></div>
+    <div>
+      <ul class="tick">
+        <li>Built <b>mobile-first</b>: the marks wrap into rows to fit the width.</li>
+        <li>On touch screens, the <b>first tap</b> on a mark shows a bubble with the activity name and status; the second
+          tap opens it.</li>
+        <li>Every mark has its own <b>screen-reader label</b> (“Topic 2 — done ✓ · click to open”), and states don’t rely
+          on colour alone: they have a symbol and a legend.</li>
+        <li>Marks are ordinary links: you can move through them with the <b>keyboard</b>.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 9-10 -->
+<section class="part">
+  <h2 id="s9"><span class="num">9</span>Who sees it, permissions and privacy</h2>
+  <ul class="tick">
+    <li>The block is shown only to users with <b>their own progress in the course</b>: enrolled students. Each one sees
+      only their own data.</li>
+    <li>Teachers and managers don’t see it as students do; if the course has no activity with completion, they see a hint.</li>
+    <li>The <code>block/efprogress:addinstance</code> capability lets editing teachers and managers add the block.</li>
+    <li>It <b>stores no personal data</b> (declared privacy provider). Its settings travel with course backups.</li>
+  </ul>
+  <p>Free software (GPL v3), built to the Moodle™ plugin guidelines: no external calls or third-party resources,
+  automated tests and code review on every release.</p>
+
+  <h2 id="s10"><span class="num">10</span>Frequently asked questions</h2>
+  <h3>A student doesn’t see the block</h3>
+  <p>Check that they are enrolled as a student and that some activity has completion enabled.</p>
+  <h3>An activity doesn’t appear</h3>
+  <p>Only activities with completion appear. Hidden ones, those for another group and those with a restriction that
+  hides them entirely never appear.</p>
+  <h3>A restricted activity doesn’t show a padlock</h3>
+  <p>Its restriction is set to hide entirely, the activity is hidden, or “Show restricted activities as locked steps”
+  is unticked in the block.</p>
+  <h3>At 100% the course doesn’t show as completed</h3>
+  <p>The block counts activities; course completion has its own criteria (grades, dates…). That is why the message
+  says “Activities completed!” and not “course completed”.</p>
+  <h3>I ticked “My time” and nothing shows</h3>
+  <p>That section needs eLearning Fácil’s reporting plugin measuring time in the course (section 7).</p>
+</section>
+
+<!-- 11 -->
+<section class="part">
+  <div class="partbar"><div class="k">eLearning Fácil</div><h1 id="s11">More plugins by eLearning Fácil</h1>
+    <p>Built for training providers, companies and academies that work with Moodle™.</p></div>
+  <div class="promo">
+    <a href="https://elearningfacil.com"><img src="active-time-clock_512.png" alt=""><div><b>Active Time Clock</b><span>Free: measures each student’s real time, only while the tab is active, with an Excel and CSV report.</span></div></a>
+    <a href="https://elearningfacil.com"><img src="direct-scorm-player_512.png" alt=""><div><b>Direct SCORM player</b><span>Free: one click and the student is right inside the SCORM, full screen and with no new windows.</span></div></a>
+    <a href="https://elearningfacil.com"><img src="class-manager_512.png" alt=""><div><b>Class Manager</b><span>Sell courses by the seat: your client signs up their people, with capped seats, an access period and an automatic welcome email.</span></div></a>
+    <a href="https://elearningfacil.com"><img src="pack_512.png" alt=""><div><b>The complete suite</b><span>Time you can prove, PDF reports, completion by time spent and an evidence file for every group.</span></div></a>
+  </div>
+  <div class="cta"><b style="font-family:'Poppins';font-size:13pt;">Want to know more?</b><br>
+    Drop us a line and we’ll tell you which one fits your Moodle™.<br>
+    <a href="https://elearningfacil.com">elearningfacil.com</a>
+    <p class="small" style="margin-top:3mm;">info@elearningfacil.com · WhatsApp +34 647 002 997</p></div>
+
+  <hr class="s">
+  <p class="small">Guide for the <code>block_efprogress</code> plugin · version 0.5.2 · © 2026 eLearning Fácil · <a href="https://elearningfacil.com">elearningfacil.com</a></p>
+  <hr class="s">
+  <p class="small">Moodle™ is a registered trademark of Moodle Pty Ltd. SCORM® is a registered trademark of Advanced Distributed Learning (ADL). eLearning Fácil is not affiliated with, associated with or endorsed by either; the names are used only to describe compatibility.</p>
+</section>
+
+</body>
+</html>

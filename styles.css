@@ -1,0 +1,402 @@
+/* block_efprogress — ring + marks (custom design of the eLearning Fácil suite).
+   No JS: the ring is CSS (conic-gradient) and the marks are real links. */
+
+.block_efprogress .efprogress {
+    --efp-green: #1e7e34;
+    --efp-blue: #0f6cbf;
+    --efp-track: #e8ecef;
+    --efp-hole: var(--bs-card-bg, #fff);
+    --efp-muted: var(--bs-secondary-color, #5b6771);
+}
+
+.block_efprogress .efp-section + .efp-section {
+    border-top: 1px solid var(--bs-border-color, #eef1f4);
+    margin-top: 12px;
+    padding-top: 12px;
+}
+
+/* ── Rings ───────────────────────────────────────────────────────────────── */
+.block_efprogress .efp-rings {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    align-items: stretch;
+    flex-wrap: wrap;
+    margin-bottom: 6px;
+}
+
+.block_efprogress .efp-ringcol {
+    text-align: center;
+}
+
+.block_efprogress .efp-ring {
+    width: 92px;
+    height: 92px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+
+.block_efprogress .efp-hole {
+    width: 68px;
+    height: 68px;
+    border-radius: 50%;
+    background: var(--efp-hole);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.block_efprogress .efp-pct {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--efp-green);
+    line-height: 1;
+}
+
+.block_efprogress .efp-ring-blue .efp-pct {
+    color: var(--efp-blue);
+}
+
+.block_efprogress .efp-frac {
+    font-size: 10px;
+    color: var(--efp-muted);
+    margin-top: 2px;
+}
+
+.block_efprogress .efp-rlabel {
+    font-size: 10px;
+    color: var(--efp-muted);
+    margin-top: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+}
+
+.block_efprogress .efp-rsub {
+    font-size: 11px;
+    color: var(--efp-blue);
+    margin-top: 1px;
+    text-align: center;
+}
+
+/* ── Stat card (time without expected duration) ──────────────────────────── */
+.block_efprogress .efp-statchip {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--bs-light, #f4f8fb);
+    border: 1px solid var(--bs-border-color, #dbe7f0);
+    border-radius: 14px;
+    padding: 10px 18px;
+    min-width: 96px;
+    width: fit-content;
+    margin: 0 auto;
+}
+
+.block_efprogress .efp-big {
+    font-size: 21px;
+    font-weight: 700;
+    color: var(--efp-blue);
+    font-variant-numeric: tabular-nums;
+    line-height: 1.1;
+}
+
+.block_efprogress .efp-cap {
+    font-size: 10px;
+    color: var(--efp-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-top: 4px;
+}
+
+/* ── Counters + cheer message ────────────────────────────────────────────── */
+.block_efprogress .efp-counts {
+    text-align: center;
+    font-size: 12.5px;
+    color: var(--bs-body-color, #3a4550);
+    margin: 4px 0 12px;
+}
+
+/* ── Grid of marks (scales by itself: auto-fill) ───────────────────────────
+   Desktop (fine pointer): 30px, discreet. Touch: ≥40px (touch target). ───── */
+.block_efprogress .efp-marks {
+    position: relative;   /* Anchor for the touch bubble. */
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(30px, 1fr));
+    gap: 5px;
+}
+
+.block_efprogress .efp-mk {
+    aspect-ratio: 1;
+    min-width: 30px;
+    min-height: 30px;
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    border: 1.5px solid transparent;
+    text-decoration: none;
+}
+
+@media (pointer: coarse) {
+    .block_efprogress .efp-marks {
+        grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+        gap: 6px;
+    }
+
+    .block_efprogress .efp-mk {
+        min-width: 40px;
+        min-height: 40px;
+        font-size: 14px;
+    }
+}
+
+/* Touch bubble: first tap shows the name, second tap opens. */
+.block_efprogress .efp-bubble {
+    position: absolute;
+    z-index: 5;
+    max-width: 220px;
+    background: #222;
+    color: #fff;
+    font-size: 12px;
+    line-height: 1.35;
+    border-radius: 6px;
+    padding: 6px 10px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+    pointer-events: none;
+}
+
+.block_efprogress .efp-mk:hover,
+.block_efprogress .efp-mk:focus {
+    text-decoration: none;
+    outline: none;
+}
+
+.block_efprogress .efp-done {
+    background: #e6f4ea;
+    color: var(--efp-green);
+    border-color: #bfe3cb;
+}
+
+.block_efprogress .efp-done:hover,
+.block_efprogress .efp-done:focus {
+    border-color: var(--efp-green);
+    color: var(--efp-green);
+}
+
+.block_efprogress .efp-now {
+    background: #e3edf7;
+    color: var(--efp-blue);
+    border-color: var(--efp-blue);
+}
+
+.block_efprogress .efp-now:hover,
+.block_efprogress .efp-now:focus {
+    color: var(--efp-blue);
+    box-shadow: 0 0 0 2px rgba(15, 108, 191, 0.25);
+}
+
+.block_efprogress .efp-pend {
+    background: var(--efp-hole);
+    color: #9aa5ae;
+    border-color: #c8cfd6;
+    border-style: dashed;
+}
+
+.block_efprogress .efp-pend:hover,
+.block_efprogress .efp-pend:focus {
+    border-color: var(--efp-blue);
+    color: var(--efp-blue);
+}
+
+/* Locked (restricted): padlock without a link; the tooltip explains why. */
+.block_efprogress .efp-locked {
+    background: var(--efp-hole);
+    color: #9aa5ae;
+    border-color: #c8cfd6;
+    font-size: 11px;
+    opacity: 0.9;
+    cursor: help;
+}
+
+/* Visible keyboard focus (accessibility). */
+.block_efprogress .efp-mk:focus-visible {
+    outline: 2px solid var(--efp-blue);
+    outline-offset: 2px;
+}
+
+/* ── Legend ──────────────────────────────────────────────────────────────── */
+.block_efprogress .efp-legend {
+    display: flex;
+    gap: 12px;
+    font-size: 11.5px;
+    color: var(--efp-muted);
+    margin-top: 10px;
+    flex-wrap: wrap;
+}
+
+.block_efprogress .efp-legend > span {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.block_efprogress .efp-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+.block_efprogress .efp-dot-done {
+    background: #e6f4ea;
+    border: 1.5px solid #bfe3cb;
+}
+
+.block_efprogress .efp-dot-now {
+    background: #e3edf7;
+    border: 1.5px solid var(--efp-blue);
+}
+
+.block_efprogress .efp-dot-pend {
+    background: var(--efp-hole);
+    border: 1.5px dashed #c8cfd6;
+}
+
+.block_efprogress .efp-dot-locked {
+    background: var(--efp-hole);
+    border: 1.5px solid #c8cfd6;
+}
+
+/* ── Horizontal layout (wide area: e.g. above the content in Boost Union).
+   Rings in a row with the counters beside them; the marks and the legend
+   take the full width below. The sections switch to display:contents and
+   their pieces are rearranged in a grid. ─────────────────────────────────── */
+.block_efprogress .efp-wrap {
+    container-type: inline-size;
+}
+
+.block_efprogress .efp-o-horizontal .efprogress {
+    display: grid;
+    grid-template-columns: auto auto 1fr;
+    gap: 6px 26px;
+    align-items: center;
+}
+
+.block_efprogress .efp-o-horizontal .efp-section {
+    display: contents;
+}
+
+.block_efprogress .efp-o-horizontal .efp-time .efp-rings,
+.block_efprogress .efp-o-horizontal .efp-time .efp-statchip {
+    grid-column: 1;
+    grid-row: 1;
+    margin: 0;
+}
+
+.block_efprogress .efp-o-horizontal .efp-section:not(.efp-time) .efp-rings {
+    grid-column: 2;
+    grid-row: 1;
+    margin: 0;
+}
+
+/* No time section: the activity ring takes the first column. */
+.block_efprogress .efp-o-horizontal .efp-section:not(.efp-time):only-child .efp-rings {
+    grid-column: 1;
+}
+
+.block_efprogress .efp-o-horizontal .efp-counts {
+    grid-column: 3;
+    grid-row: 1;
+    text-align: left;
+    margin: 0;
+}
+
+.block_efprogress .efp-o-horizontal .efp-marks {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    margin-top: 6px;
+}
+
+.block_efprogress .efp-o-horizontal .efp-legend {
+    grid-column: 1 / -1;
+    grid-row: 3;
+    margin-top: 4px;
+}
+
+/* "Auto": the same rules, enabled only when the block is genuinely wide
+   (container query on efp-wrap). In browsers without support, auto mode
+   degrades to vertical without breaking anything. */
+@container (min-width: 520px) {
+    .block_efprogress .efp-o-auto .efprogress {
+        display: grid;
+        grid-template-columns: auto auto 1fr;
+        gap: 6px 26px;
+        align-items: center;
+    }
+
+    .block_efprogress .efp-o-auto .efp-section {
+        display: contents;
+    }
+
+    .block_efprogress .efp-o-auto .efp-time .efp-rings,
+    .block_efprogress .efp-o-auto .efp-time .efp-statchip {
+        grid-column: 1;
+        grid-row: 1;
+        margin: 0;
+    }
+
+    .block_efprogress .efp-o-auto .efp-section:not(.efp-time) .efp-rings {
+        grid-column: 2;
+        grid-row: 1;
+        margin: 0;
+    }
+
+    .block_efprogress .efp-o-auto .efp-section:not(.efp-time):only-child .efp-rings {
+        grid-column: 1;
+    }
+
+    .block_efprogress .efp-o-auto .efp-counts {
+        grid-column: 3;
+        grid-row: 1;
+        text-align: left;
+        margin: 0;
+    }
+
+    .block_efprogress .efp-o-auto .efp-marks {
+        grid-column: 1 / -1;
+        grid-row: 2;
+        margin-top: 6px;
+    }
+
+    .block_efprogress .efp-o-auto .efp-legend {
+        grid-column: 1 / -1;
+        grid-row: 3;
+        margin-top: 4px;
+    }
+}
+
+/* ── Dark theme: tone down the pastel backgrounds to keep contrast ───────── */
+@media (prefers-color-scheme: dark) {
+    .block_efprogress .efp-done,
+    .block_efprogress .efp-dot-done {
+        background: rgba(30, 126, 52, 0.25);
+        color: #7fd494;
+    }
+
+    .block_efprogress .efp-now,
+    .block_efprogress .efp-dot-now {
+        background: rgba(15, 108, 191, 0.25);
+        color: #7db8e8;
+    }
+}
+
+/* Completed with a failing grade: done, but flagged. */
+.block_efprogress .efp-mk.efp-failed {
+    box-shadow: inset 0 0 0 2px #c9a227;
+}
