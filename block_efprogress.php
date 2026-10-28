@@ -142,9 +142,14 @@ class block_efprogress extends block_base {
         // My progress section (activities with completion).
         $showprogress = !isset($config->showprogress) || !empty($config->showprogress);
         $showlocked = !isset($config->showlocked) || !empty($config->showlocked);
-        $acts = $showprogress ? progress::activities($course, $userid, $showlocked) : [];
+        // The report's numbers come first: their period window also decides
+        // which completions the marks may count (see progress::activities()).
+        $numbers = $showprogress ? progress::report_numbers($course, $userid) : null;
+        $acts = $showprogress
+            ? progress::activities($course, $userid, $showlocked, (int) ($numbers->from ?? 0), (int) ($numbers->to ?? 0))
+            : [];
         if (!empty($acts)) {
-            $parts[] = $this->render_progress($acts, $config, progress::report_numbers($course, $userid));
+            $parts[] = $this->render_progress($acts, $config, $numbers);
             $this->touch_tooltip_js();
         }
 
@@ -223,9 +228,15 @@ class block_efprogress extends block_base {
         $total = count($acts);
         $done = 0;
         $locked = 0;
+        $outside = 0;
         foreach ($acts as $a) {
             if ($a->state === progress::STATE_DONE) {
-                $done++;
+                // Done outside the training period: shown, never counted.
+                if (!empty($a->outside)) {
+                    $outside++;
+                } else {
+                    $done++;
+                }
             } else if ($a->state === progress::STATE_LOCKED) {
                 $locked++;
             }
@@ -247,11 +258,15 @@ class block_efprogress extends block_base {
             'green'
         );
 
-        $pend = max(0, $total - $done - $locked);
+        // The line always adds up to the ring's total.
+        $pend = max(0, $total - $done - $locked - $outside);
         $counts = html_writer::tag('b', get_string('donecount', 'block_efprogress', $done))
             . ' · ' . get_string('pendcount', 'block_efprogress', $pend);
         if ($locked > 0) {
             $counts .= ' · ' . get_string('lockedcount', 'block_efprogress', $locked);
+        }
+        if ($outside > 0) {
+            $counts .= ' · ' . get_string('outsidecount', 'block_efprogress', $outside);
         }
         $cheer = progress::cheer_text($pct, $config);
         if ($cheer !== '') {
@@ -260,8 +275,17 @@ class block_efprogress extends block_base {
 
         $marks = '';
         foreach ($acts as $a) {
-            $statelabel = get_string(!empty($a->failed) ? 'state_donefail' : 'state_' . $a->state, 'block_efprogress');
+            if (!empty($a->outside)) {
+                $statekey = 'state_doneoutside';
+            } else if (!empty($a->failed)) {
+                $statekey = 'state_donefail';
+            } else {
+                $statekey = 'state_' . $a->state;
+            }
+            $statelabel = get_string($statekey, 'block_efprogress');
             $label = $a->name . ' — ' . $statelabel;
+            $classes = 'efp-mk efp-' . $a->state . (!empty($a->failed) ? ' efp-failed' : '')
+                . (!empty($a->outside) ? ' efp-outside' : '');
             if ($a->state === progress::STATE_LOCKED && $a->reason !== '') {
                 $label .= ' · ' . $a->reason;
             }
@@ -271,7 +295,7 @@ class block_efprogress extends block_base {
             if ($a->url) {
                 $label .= ' · ' . get_string('clicktogo', 'block_efprogress');
                 $marks .= html_writer::link($a->url, $symbol, [
-                    'class'      => 'efp-mk efp-' . $a->state . (!empty($a->failed) ? ' efp-failed' : ''),
+                    'class'      => $classes,
                     'title'      => $label,
                     'role'       => 'listitem',
                     'aria-label' => $label,
@@ -279,7 +303,7 @@ class block_efprogress extends block_base {
             } else {
                 // Locked (or done but no longer accessible): mark without a
                 // link; the tooltip / touch bubble carries the reason.
-                $marks .= html_writer::span($symbol, 'efp-mk efp-' . $a->state . (!empty($a->failed) ? ' efp-failed' : ''), [
+                $marks .= html_writer::span($symbol, $classes, [
                     'title'      => $label,
                     'role'       => 'listitem',
                     'aria-label' => $label,
@@ -297,6 +321,10 @@ class block_efprogress extends block_base {
             . ($locked > 0
                 ? html_writer::span(html_writer::span('', 'efp-dot efp-dot-locked')
                     . get_string('state_locked', 'block_efprogress'))
+                : '')
+            . ($outside > 0
+                ? html_writer::span(html_writer::span('', 'efp-dot efp-dot-outside')
+                    . get_string('state_outside', 'block_efprogress'))
                 : ''),
             'efp-legend'
         );

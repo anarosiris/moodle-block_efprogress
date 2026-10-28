@@ -224,6 +224,21 @@
     cursor: help;
 }
 
+/* Done outside the student's training period: still a check (they did it),
+   but toned down and dashed: neither the ring nor the time report count it. */
+.block_efprogress .efp-done.efp-outside {
+    background: var(--efp-hole);
+    color: #7f8f87;
+    border-color: #bfe3cb;
+    border-style: dashed;
+}
+
+.block_efprogress .efp-done.efp-outside:hover,
+.block_efprogress .efp-done.efp-outside:focus {
+    border-color: var(--efp-green);
+    color: var(--efp-green);
+}
+
 /* Visible keyboard focus (accessibility). */
 .block_efprogress .efp-mk:focus-visible {
     outline: 2px solid var(--efp-blue);
@@ -271,6 +286,11 @@
 .block_efprogress .efp-dot-locked {
     background: var(--efp-hole);
     border: 1.5px solid #c8cfd6;
+}
+
+.block_efprogress .efp-dot-outside {
+    background: var(--efp-hole);
+    border: 1.5px dashed #bfe3cb;
 }
 
 /* ── Horizontal layout (wide area: e.g. above the content in Boost Union).
@@ -393,6 +413,11 @@
     .block_efprogress .efp-dot-now {
         background: rgba(15, 108, 191, 0.25);
         color: #7db8e8;
+    }
+
+    .block_efprogress .efp-done.efp-outside {
+        background: transparent;
+        color: #9fb8a7;
     }
 }
 

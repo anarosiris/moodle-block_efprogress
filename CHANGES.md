@@ -2,6 +2,19 @@
 
 All notable changes to this plugin are listed here.
 
+## [0.6.0] - 2026-10-28
+
+### Fixed
+- Grid and ring could disagree when eLearning Fácil's reporting plugin is installed: an activity completed outside the
+  student's training period (course dates, group sheet or enrolment period) was drawn as a plain ✓ while the ring and
+  the counter, which follow the report, left it out ("21 marks done, counter says 6"). Those completions are now drawn
+  as a toned-down dashed ✓ with the tooltip "done outside your training period (not counted)", the counter line adds
+  "N outside the period" and always adds up to the ring's total, and the legend explains the new mark. Nothing changes
+  on sites without the reporting plugin.
+
+### Changed
+- English plugin name: "Training Evidence: My Progress" (the block title students see is still "My progress").
+
 ## [0.5.2] - 2026-10-13
 
 ### Changed

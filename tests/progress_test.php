@@ -334,7 +334,8 @@ final class progress_test extends \advanced_testcase {
     /**
      * With local_efreport installed, the numbers of the ring are the report's
      * (hidden activities with completion count in its total; completions
-     * outside the student's period do not).
+     * outside the student's period do not), and the marks follow the same
+     * period window: a completion outside it is flagged, never counted.
      */
     public function test_report_numbers(): void {
         if (!class_exists('\\local_efreport\\local\\progressapi')) {
@@ -365,9 +366,32 @@ final class progress_test extends \advanced_testcase {
         $numbers = progress::report_numbers(get_course($course->id), (int) $student->id);
         $this->assertSame(3, $numbers->total);
         $this->assertSame(1, $numbers->completed);
-        // The block's own list has two visible activities, both done.
+        $this->assertGreaterThan(0, $numbers->from);
+        // Without a window the block's own list has two visible activities, both done.
         $acts = progress::activities(get_course($course->id), (int) $student->id);
         $this->assertCount(2, $acts);
+        $this->assertFalse($acts[0]->outside);
+        $this->assertFalse($acts[1]->outside);
+        // With the report's window the second one is done but outside the period.
+        $acts = progress::activities(get_course($course->id), (int) $student->id, true, $numbers->from, $numbers->to);
+        $this->assertCount(2, $acts);
+        $this->assertSame(progress::STATE_DONE, $acts[0]->state);
+        $this->assertFalse($acts[0]->outside);
+        $this->assertSame(progress::STATE_DONE, $acts[1]->state);
+        $this->assertTrue($acts[1]->outside);
+        $this->assertSame(1, count(array_filter($acts, fn($a) => $a->state === progress::STATE_DONE && !$a->outside)));
+    }
+
+    /**
+     * The window helper: 0 means no limit on that side.
+     */
+    public function test_in_window(): void {
+        $this->assertTrue(progress::in_window(100, 0, 0));
+        $this->assertTrue(progress::in_window(100, 100, 100));
+        $this->assertTrue(progress::in_window(100, 50, 0));
+        $this->assertTrue(progress::in_window(100, 0, 150));
+        $this->assertFalse(progress::in_window(100, 101, 0));
+        $this->assertFalse(progress::in_window(100, 0, 99));
     }
 
     /**

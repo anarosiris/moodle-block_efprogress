@@ -62,12 +62,26 @@ class progress {
      * to hide entirely, own or of the section) never appear, and neither do
      * the activities restricted to ANOTHER group (see groupaccess).
      *
+     * With a period window (the one the time report measures this student
+     * with: course dates, group sheet or enrolment), an activity completed
+     * OUTSIDE it is still marked as done but flagged 'outside', so the block
+     * can show it toned down and leave it out of the count, exactly as the
+     * report does. Without a window (no local_efreport) nothing changes.
+     *
      * @param \stdClass $course Course.
      * @param int $userid User (the student themselves).
      * @param bool $showlocked Include restricted-but-listed activities as locked.
-     * @return array List of {cmid, name, url, state, reason} objects.
+     * @param int $from Start of the period window (timestamp, 0 = no limit).
+     * @param int $to End of the period window (timestamp, 0 = no limit).
+     * @return array List of {cmid, name, url, state, reason, failed, outside} objects.
      */
-    public static function activities(\stdClass $course, int $userid, bool $showlocked = true): array {
+    public static function activities(
+        \stdClass $course,
+        int $userid,
+        bool $showlocked = true,
+        int $from = 0,
+        int $to = 0
+    ): array {
         $completion = new \completion_info($course);
         if (!$completion->is_enabled()) {
             return [];
@@ -120,6 +134,9 @@ class progress {
             // another matter, flagged on the mark).
             $done = (int) $data->completionstate > COMPLETION_INCOMPLETE;
             $failed = in_array((int) $data->completionstate, [COMPLETION_COMPLETE_FAIL, COMPLETION_COMPLETE_FAIL_HIDDEN], true);
+            // Completed outside the student's training period: the report
+            // filters on this same date, so it does not count there either.
+            $outside = $done && !self::in_window((int) $data->timemodified, $from, $to);
             // Done beats locked: what was completed before the restriction
             // closed (e.g. "until" dates) keeps counting as done.
             if ($done) {
@@ -137,6 +154,7 @@ class progress {
                 // Plain text: the renderer escapes it once (attributes, bubbles).
                 'name'  => format_string($cm->name, true, ['context' => $cm->context, 'escape' => false]),
                 'failed' => $failed,
+                'outside' => $outside,
                 'url'   => $locked ? null : ($cm->url ?: new \moodle_url(
                     '/course/view.php',
                     ['id' => $course->id],
@@ -147,6 +165,18 @@ class progress {
             ];
         }
         return $out;
+    }
+
+    /**
+     * Whether a timestamp falls inside a period window (0 = open end).
+     *
+     * @param int $time Timestamp.
+     * @param int $from Start (0 = no limit).
+     * @param int $to End (0 = no limit).
+     * @return bool
+     */
+    public static function in_window(int $time, int $from, int $to): bool {
+        return ($from <= 0 || $time >= $from) && ($to <= 0 || $time <= $to);
     }
 
     /**

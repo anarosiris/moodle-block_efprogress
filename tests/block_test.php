@@ -49,6 +49,56 @@ final class block_test extends \advanced_testcase {
     }
 
     /**
+     * With local_efreport installed, a completion outside the student's
+     * training period is drawn as a toned-down mark and the counter line
+     * (done, pending, outside) adds up to the ring's total, so the grid and
+     * the ring never disagree (bug: "21 marks done, counter says 6").
+     */
+    public function test_completion_outside_period_is_shown_but_not_counted(): void {
+        if (!class_exists('\\local_efreport\\local\\progressapi')) {
+            $this->markTestSkipped('local_efreport is not installed.');
+        }
+        global $DB;
+        $this->resetAfterTest();
+        $gen = $this->getDataGenerator();
+        $course = $gen->create_course(['enablecompletion' => 1,
+            'startdate' => time() - 10 * DAYSECS, 'enddate' => time() + 10 * DAYSECS]);
+        $student = $gen->create_user();
+        $gen->enrol_user($student->id, $course->id, 'student');
+        $pages = [];
+        for ($i = 0; $i < 4; $i++) {
+            $pages[] = $gen->create_module('page', ['course' => $course->id], ['completion' => COMPLETION_TRACKING_MANUAL]);
+        }
+        $completion = new \completion_info($course);
+        $modinfo = get_fast_modinfo($course);
+        foreach ([0, 1, 2] as $i) {
+            $completion->update_state($modinfo->get_cm($pages[$i]->cmid), COMPLETION_COMPLETE, (int) $student->id);
+        }
+        // Two of the three completions happened before the course period.
+        foreach ([1, 2] as $i) {
+            $DB->set_field(
+                'course_modules_completion',
+                'timemodified',
+                time() - 20 * DAYSECS,
+                ['coursemoduleid' => $pages[$i]->cmid, 'userid' => $student->id]
+            );
+        }
+        \local_efreport\local\progressapi::reset_caches();
+        [$page, $instance] = $this->make_block($course);
+        $this->setUser($student);
+        $html = block_instance('efprogress', $instance, $page)->get_content()->text;
+        // Ring: 1 of 4 (the report's numbers); line: 1 done · 1 pending · 2 outside.
+        $this->assertStringContainsString('1 of 4', $html);
+        $this->assertStringContainsString('<b>1 done</b> · 1 pending · 2 outside the period', $html);
+        $this->assertSame(2, substr_count($html, 'efp-outside'), 'two toned-down marks');
+        $this->assertSame(1, substr_count($html, 'efp-mk efp-done"'), 'one plain done mark');
+        $this->assertStringContainsString('done outside your training period', $html);
+        $this->assertStringContainsString('efp-dot-outside', $html);
+        // The "you are here" mark lands on the pending activity, not on a finished one.
+        $this->assertSame(1, substr_count($html, 'efp-now'));
+    }
+
+    /**
      * A student sees their progress; a visitor who is not logged in, a
      * non-editing teacher (no progress of their own) and a student of another
      * course see nothing.
