@@ -1,4 +1,4 @@
-# Training Evidence: My Progress (block_efprogress)
+# Training Evidence: My Progress (`block_efprogress`)
 
 Free course block for Moodle 5.1+ by eLearning Fácil. It shows **each student their own progress** in the course at a
 glance, with no JavaScript and built mobile-first:
@@ -7,7 +7,7 @@ glance, with no JavaScript and built mobile-first:
   with completion enabled: ✓ done · ● you are here · ○ pending. Every mark is a link to its activity. The list is live:
   activities added or removed during the course appear and disappear on their own. Completion is Moodle's official
   activity completion, whatever the method (view, grade…); the block only reflects it.
-- **Completions outside the training period** (when the eLearning Fácil report is installed and the course, group or
+- **Completions outside the training period** (when the Training Evidence Report is installed and the course, group or
   enrolment has dates): drawn as a toned-down dashed ✓, counted apart ("N outside the period") and left out of the
   ring, exactly as the report does, so block and report always agree.
 - **Restricted activities** that the course page lists greyed out (date, previous completion…) appear as a **padlock**,
@@ -30,7 +30,7 @@ the percentage and the time left). This section appears **only if the site has e
 stays hidden and everything else works as described above. When that plugin is installed, the activities ring also
 uses the same figures as its report.
 
-Current version: **0.5.2** — see [CHANGES.md](CHANGES.md).
+Current version: **0.6.1** — see [CHANGES.md](CHANGES.md).
 
 ## Documentation
 

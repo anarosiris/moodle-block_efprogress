@@ -23,7 +23,7 @@ Feature: The student progress block shows its rings in the course
 
   Scenario: The student sees the block with the activities ring
     When I am on the "Course 1" course page logged in as student1
-    Then I should see "My progress"
+    Then I should see "My Progress"
     And I should see "Activities"
 
   Scenario: Restricted activities appear as locked marks with the reason
@@ -31,5 +31,5 @@ Feature: The student progress block shows its rings in the course
       | activity | course | name       | idnumber | completion | availability                                                            |
       | page     | C1     | Later page | page2    | 1          | {"op":"&","c":[{"type":"date","d":">=","t":4102444800}],"showc":[true]} |
     When I am on the "Course 1" course page logged in as student1
-    Then I should see "🔒" in the "My progress" "block"
-    And I should see "1 locked" in the "My progress" "block"
+    Then I should see "🔒" in the "My Progress" "block"
+    And I should see "1 locked" in the "My Progress" "block"

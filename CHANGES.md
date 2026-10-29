@@ -2,6 +2,14 @@
 
 All notable changes to this plugin are listed here.
 
+## [0.6.1] - 2026-10-30
+
+### Changed
+- Spanish plugin name joins the family: "Seguimiento de la Formación: Mi progreso". English block title "My Progress" (capital P, as a product name) and the same in the capability and settings labels; the hints name the "Training Evidence Report"; native-English review of the language file (23 strings). No change in behaviour.
+
+### Documentation
+- English and Spanish guides and README updated to the new names.
+
 ## [0.6.0] - 2026-10-28
 
 ### Fixed
