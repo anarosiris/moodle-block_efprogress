@@ -2,6 +2,11 @@
 
 All notable changes to this plugin are listed here.
 
+## [0.6.2] - 2026-10-30
+
+### Changed
+- Spanish guide now says «estudiante» instead of «alumno», consistently with the interface. No code changes.
+
 ## [0.6.1] - 2026-10-30
 
 ### Changed
