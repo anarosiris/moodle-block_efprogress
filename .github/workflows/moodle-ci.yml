@@ -23,7 +23,7 @@ concurrency:
 
 # Released version of the optional reporting plugin that some tests read.
 env:
-  EFREPORT_TAG: v2.47.0
+  EFREPORT_TAG: v2.48.1
 
 jobs:
   # Chooses which matrix entries run (GitHub cannot read `matrix` in a job-level `if`):
