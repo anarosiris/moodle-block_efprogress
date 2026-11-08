@@ -2,6 +2,11 @@
 
 All notable changes to this plugin are listed here.
 
+## [0.6.3] - 2026-11-08
+
+### Changed
+- Spanish guide: the install step now uses the real Moodle 5.1–5.3 label «Agregar un bloque» (was «Añadir un bloque»). No code changes.
+
 ## [0.6.2] - 2026-10-30
 
 ### Changed
