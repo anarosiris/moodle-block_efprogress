@@ -30,7 +30,7 @@ the percentage and the time left). This section appears **only if the site has e
 stays hidden and everything else works as described above. When that plugin is installed, the activities ring also
 uses the same figures as its report.
 
-Current version: **0.6.3** — see [CHANGES.md](CHANGES.md).
+Current version: **0.6.4** — see [CHANGES.md](CHANGES.md).
 
 ## Documentation
 

@@ -110,7 +110,7 @@ class block_efprogress extends block_base {
         $course = $this->page->course;
 
         // Only for those who HAVE progress: enrolled users that count towards
-        // completion (students). Inspectors, managers or read-only roles do
+        // completion (students). Auditors, managers or read-only roles do
         // not see the block (they have no progress of their own to show).
         if (!is_enrolled($this->page->context, $USER->id, 'moodle/course:isincompletionreports', true)) {
             // Whoever configures the course: a hint when nothing would show
