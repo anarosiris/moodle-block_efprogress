@@ -120,10 +120,18 @@ jobs:
           sudo locale-gen en_AU.UTF-8
           echo "NVM_DIR=$HOME/.nvm" >> $GITHUB_ENV
 
-      # The optional reporting plugin is commercial: it is fetched with a read-only token.
+      # The optional reporting plugin is commercial: it is fetched with a read-only deploy key
+      # that only opens that one repository (secret SUITE_DEPLOY_KEY).
       - name: Add the suite plugins the tests read (local_efreport)
+        env:
+          SUITE_DEPLOY_KEY: ${{ secrets.SUITE_DEPLOY_KEY }}
         run: |
-          moodle-plugin-ci add-plugin --clone "https://x-access-token:${{ secrets.SUITE_READ_TOKEN }}@github.com/anarosiris/local_efreport.git" --branch "${{ env.EFREPORT_TAG }}"
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          printf '%s\n' "$SUITE_DEPLOY_KEY" > ~/.ssh/suite_key && chmod 600 ~/.ssh/suite_key
+          ssh-keyscan -t ed25519 github.com >> ~/.ssh/known_hosts 2>/dev/null
+          export GIT_SSH_COMMAND="ssh -i ~/.ssh/suite_key -o IdentitiesOnly=yes"
+          moodle-plugin-ci add-plugin --clone "git@github.com:anarosiris/local_efreport.git" --branch "${{ env.EFREPORT_TAG }}"
+          rm -f ~/.ssh/suite_key
 
       - name: Install Moodle + plugin
         run: moodle-plugin-ci install --plugin ./plugin --db-host=127.0.0.1
