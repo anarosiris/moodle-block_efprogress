@@ -1,9 +1,10 @@
 # Training Evidence: My Progress (`block_efprogress`)
 
 Free course block for Moodle 5.1+ by eLearning Fácil. It shows **each student their own progress** in the course at a
-glance, with no JavaScript and built mobile-first:
+glance, rendered on the server (the only JavaScript is a few lines for the tooltips on touch screens) and built
+mobile-first:
 
-- **My progress (activities)** — a ring with the percentage and "N of M", plus a grid of **marks**, one per activity
+- **My Progress (activities)** — a ring with the percentage and "N of M", plus a grid of **marks**, one per activity
   with completion enabled: ✓ done · ● you are here · ○ pending. Every mark is a link to its activity. The list is live:
   activities added or removed during the course appear and disappear on their own. Completion is Moodle's official
   activity completion, whatever the method (view, grade…); the block only reflects it.
@@ -30,7 +31,7 @@ the percentage and the time left). This section appears **only if the site has e
 stays hidden and everything else works as described above. When that plugin is installed, the activities ring also
 uses the same figures as its report.
 
-Current version: **0.6.4** — see [CHANGES.md](CHANGES.md).
+Current version: **0.6.5** — see [CHANGES.md](CHANGES.md).
 
 ## Documentation
 
@@ -41,13 +42,13 @@ Current version: **0.6.4** — see [CHANGES.md](CHANGES.md).
 
 1. **Back up your site first** (database, moodledata and code) — good practice with any plugin.
 2. Site administration → Plugins → Install plugins → upload the ZIP and confirm.
-3. In a course, turn editing on and add the **My progress** block.
+3. In a course, turn editing on and add the **My Progress** block.
 
 Requirements: Moodle 5.1, 5.2 or 5.3 · PHP 8.2+ · MySQL/MariaDB or PostgreSQL.
 
 ## Configuration
 
-- **Site** (Site administration → Plugins → Blocks → My progress): the course custom field that holds the
+- **Site** (Site administration → Plugins → Blocks → My Progress): the course custom field that holds the
   **expected duration** (accepts hours, "30 h", "90 min" or hh:mm) and the default encouragement texts.
 - **Block instance** (course by course): show progress · show restricted activities as locked steps · encouragement
   messages (with course-specific texts) · show time · duration source (course field, manual or none) · layout.

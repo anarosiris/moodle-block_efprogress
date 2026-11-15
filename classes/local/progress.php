@@ -226,7 +226,7 @@ class progress {
             if (!$section->visible) {
                 return null;
             }
-            if (trim((string) $section->availableinfo) !== '') {
+            if (self::has_info($section->availableinfo)) {
                 return self::plain_reason($section->availableinfo, $cm->get_course());
             }
             if (!$section->is_delegated()) {
@@ -236,7 +236,7 @@ class progress {
             if ($owner === null || !$owner->visible || !$owner->visibleoncoursepage) {
                 return null;
             }
-            if (!$owner->uservisible && trim((string) $owner->availableinfo) !== '') {
+            if (!$owner->uservisible && self::has_info($owner->availableinfo)) {
                 return self::plain_reason($owner->availableinfo, $cm->get_course());
             }
             $section = $modinfo->get_section_info($owner->sectionnum);
@@ -257,7 +257,7 @@ class progress {
         $modinfo = $cm->get_modinfo();
         $section = $cm->get_section_info();
         for ($i = 0; $i < 6 && $section; $i++) {
-            if (!$section->visible || (!$section->uservisible && trim((string) $section->availableinfo) === '')) {
+            if (!$section->visible || (!$section->uservisible && !self::has_info($section->availableinfo))) {
                 return false;
             }
             if (!$section->is_delegated()) {
@@ -266,7 +266,7 @@ class progress {
             $owner = $modinfo->instances['subsection'][(int) $section->itemid] ?? null;
             if (
                 $owner === null || !$owner->visible || !$owner->visibleoncoursepage
-                    || (!$owner->uservisible && trim((string) $owner->availableinfo) === '')
+                    || (!$owner->uservisible && !self::has_info($owner->availableinfo))
             ) {
                 return false;
             }
@@ -276,15 +276,48 @@ class progress {
     }
 
     /**
-     * Formats availability information into plain text for the mark tooltip.
+     * Whether the core gives a reason to show for a restricted section or
+     * activity. It is a string for a single condition and a renderable list
+     * (core_availability_multiple_messages) for two or more: never cast it.
      *
-     * @param string|\renderable $availableinfo Raw availability information.
+     * @param string|\renderable|null $availableinfo Raw availability information.
+     * @return bool
+     */
+    protected static function has_info($availableinfo): bool {
+        if (is_object($availableinfo)) {
+            return true;
+        }
+        return trim((string) $availableinfo) !== '';
+    }
+
+    /**
+     * Formats availability information into one line of plain text for the
+     * mark tooltip (a list of conditions becomes "heading: one; two").
+     *
+     * @param string|\renderable|null $availableinfo Raw availability information.
      * @param \stdClass $course Course.
      * @return string Reason without HTML ('' if none).
      */
     protected static function plain_reason($availableinfo, \stdClass $course): string {
+        if (!self::has_info($availableinfo)) {
+            return '';
+        }
         $info = \core_availability\info::format_info($availableinfo, $course);
-        return trim(html_to_text($info, 0, false));
+        // List items on their own lines, then every line joined in a single one.
+        $info = preg_replace('~</(li|ul|ol|p|div)>|<br\s*/?>~i', "$0\n", $info) ?? $info;
+        $text = html_entity_decode(strip_tags($info), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        // Text that is not valid UTF-8 makes the /u functions fail: keep it as it comes.
+        $lines = preg_split('/\R+/u', $text) ?: [$text];
+        $lines = array_values(array_filter(array_map(
+            static fn(string $line): string => trim(preg_replace('/\s+/u', ' ', $line) ?? $line),
+            $lines
+        ), static fn(string $line): bool => $line !== ''));
+        $reason = '';
+        foreach ($lines as $line) {
+            // A heading ("Not available unless:", "Any of:") runs into its first item.
+            $reason .= ($reason === '' ? '' : (str_ends_with($reason, ':') ? ' ' : '; ')) . $line;
+        }
+        return $reason;
     }
 
     /**

@@ -225,6 +225,67 @@ final class progress_test extends \advanced_testcase {
     }
 
     /**
+     * A restriction with two or more unmet conditions gives the core a list of
+     * messages (a renderable, not a string): on a section, on a subsection and
+     * on the activity itself it is still a locked mark, with every condition
+     * in the reason.
+     */
+    public function test_restrictions_with_several_conditions(): void {
+        global $DB;
+        $this->resetAfterTest();
+        $this->setAdminUser();
+        set_config('enableavailability', 1);
+        $gen = $this->getDataGenerator();
+        $course = $gen->create_course(['enablecompletion' => 1, 'numsections' => 3], ['createsections' => true]);
+        $student = $gen->create_user();
+        $gen->enrol_user($student->id, $course->id, 'student');
+        // Two dates still to come (mid 2030 and mid 2035), both shown.
+        $two = json_encode([
+            'op' => '&',
+            'c' => [['type' => 'date', 'd' => '>=', 't' => 1909094400], ['type' => 'date', 'd' => '>=', 't' => 2066860800]],
+            'showc' => [true, true],
+        ]);
+        $tracked = ['completion' => COMPLETION_TRACKING_MANUAL];
+
+        // Section 1: restricted with the two conditions, one plain page inside.
+        $DB->set_field('course_sections', 'availability', $two, ['course' => $course->id, 'section' => 1]);
+        rebuild_course_cache($course->id, true);
+        $gen->create_module('page', ['course' => $course->id, 'section' => 1], $tracked);
+        // Section 2: a page with the two conditions itself, and a subsection
+        // with the two conditions holding a plain page.
+        $gen->create_module('page', ['course' => $course->id, 'section' => 2, 'availability' => $two], $tracked);
+        $sub = $gen->create_module('subsection', ['course' => $course->id, 'section' => 2, 'availability' => $two]);
+        $inner = get_fast_modinfo($course)->get_cm($sub->cmid)->get_delegated_section_info();
+        $gen->create_module('page', ['course' => $course->id, 'section' => $inner->sectionnum], $tracked);
+
+        $modinfo = get_fast_modinfo($course, (int) $student->id);
+        $this->assertInstanceOf(\core_availability_multiple_messages::class, $modinfo->get_section_info(1)->availableinfo);
+
+        $acts = progress::activities($course, (int) $student->id);
+        $this->assertCount(3, $acts);
+        foreach ($acts as $act) {
+            $this->assertSame(progress::STATE_LOCKED, $act->state);
+            $this->assertStringContainsString('2030', $act->reason);
+            $this->assertStringContainsString('2035', $act->reason);
+            // One line of plain text for the tooltip: no markup, no line breaks.
+            $this->assertSame(strip_tags($act->reason), $act->reason);
+            $this->assertStringNotContainsString("\n", $act->reason);
+            $this->assertStringStartsWith(get_string('list_root_and', 'availability') . ' ', $act->reason);
+            $this->assertMatchesRegularExpression('/2030[^;]*; [^;]*2035/', $act->reason);
+        }
+
+        // Setting off: none of them is listed.
+        $this->assertCount(0, progress::activities($course, (int) $student->id, false));
+
+        // One of the two conditions hides the section entirely: its activity is out.
+        $half = json_decode($two);
+        $half->showc = [true, false];
+        $DB->set_field('course_sections', 'availability', json_encode($half), ['course' => $course->id, 'section' => 1]);
+        rebuild_course_cache($course->id, true);
+        $this->assertCount(2, progress::activities($course, (int) $student->id));
+    }
+
+    /**
      * The student's manual completion ("mark as done") is reflected instantly.
      */
     public function test_manual_completion_reflected(): void {

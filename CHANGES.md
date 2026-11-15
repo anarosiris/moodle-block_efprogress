@@ -1,6 +1,15 @@
-# Changelog — My progress (block_efprogress)
+# Changelog — My Progress (block_efprogress)
 
 All notable changes to this plugin are listed here.
+
+## [0.6.5] - 2026-11-15
+
+### Fixed
+- The course page failed with an error ("Object of class core_availability_multiple_messages could not be converted to string") for a student when a section, or a subsection, had an access restriction with two or more conditions still unmet and the block was listing its activities as locked. Those activities now show as locked marks, as intended.
+- The tooltip of a locked mark now lists every unmet condition on one line ("Not available unless: It is on or after 1 January 2030; The activity Quiz is marked complete") and keeps dates and activity names as written (they were shown in capitals).
+
+### Documentation
+- README: the block name is written "My Progress" throughout, and it no longer says the block has no JavaScript (a few lines handle the tooltips on touch screens). Guides: version only.
 
 ## [0.6.4] - 2026-11-10
 
